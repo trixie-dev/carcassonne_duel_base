@@ -4,28 +4,23 @@ export class ScoreBoard {
     constructor() {
         console.log('Initializing ScoreBoard...');
         this.currentPlayer = 1;
-        this.scores = { 1: 0, 2: 0 };
-        this.jokers = { 1: 2, 2: 2 }; // Кожен гравець починає з 2 джокерами
+        this.scores = [0, 0]; // Змінюємо на масив
+        this.jokers = [2, 2]; // Змінюємо на масив
         this.updateDisplay();
         console.log('ScoreBoard initialized');
     }
 
     updateDisplay() {
         console.log('Updating score display...');
-        try {
-            // Оновлюємо поточного гравця
-            document.getElementById('currentPlayer').textContent = `Гравець ${this.currentPlayer}`;
-            
-            // Оновлюємо рахунок
-            document.getElementById('player1Score').textContent = this.scores[1];
-            document.getElementById('player2Score').textContent = this.scores[2];
-            
-            // Оновлюємо джокери
-            document.getElementById('player1Jokers').textContent = '🃏'.repeat(this.jokers[1]);
-            document.getElementById('player2Jokers').textContent = '🃏'.repeat(this.jokers[2]);
-        } catch (error) {
-            console.error('Error updating score display:', error);
-        }
+        const player1Score = document.getElementById('player1Score');
+        const player2Score = document.getElementById('player2Score');
+        const currentPlayerElement = document.getElementById('currentPlayer');
+        
+        if (player1Score) player1Score.textContent = this.scores[0];
+        if (player2Score) player2Score.textContent = this.scores[1];
+        if (currentPlayerElement) currentPlayerElement.textContent = `Гравець ${this.currentPlayer}`;
+        
+        console.log('Current scores:', this.scores);
     }
 
     switchPlayer() {
@@ -34,16 +29,19 @@ export class ScoreBoard {
         this.updateDisplay();
     }
 
-    addPoints(player, points) {
-        console.log(`Adding ${points} points to player ${player}`);
-        this.scores[player] += points;
+    addPoints(points) {
+        console.log(`Adding ${points} points to player ${this.currentPlayer}`);
+        const playerIndex = this.currentPlayer - 1;
+        this.scores[playerIndex] += points;
+        console.log(`New score for player ${this.currentPlayer}:`, this.scores[playerIndex]);
         this.updateDisplay();
     }
 
     useJoker() {
         console.log(`Player ${this.currentPlayer} using joker`);
-        if (this.jokers[this.currentPlayer] > 0) {
-            this.jokers[this.currentPlayer]--;
+        const playerIndex = this.currentPlayer - 1;
+        if (this.jokers[playerIndex] > 0) {
+            this.jokers[playerIndex]--;
             this.updateDisplay();
             return true;
         }
@@ -51,14 +49,14 @@ export class ScoreBoard {
     }
 
     hasJokers() {
-        return this.jokers[this.currentPlayer] > 0;
+        return this.jokers[this.currentPlayer - 1] > 0;
     }
 
     reset() {
         console.log('Resetting score board...');
         this.currentPlayer = 1;
-        this.scores = { 1: 0, 2: 0 };
-        this.jokers = { 1: 2, 2: 2 };
+        this.scores = [0, 0];
+        this.jokers = [2, 2];
         this.updateDisplay();
     }
 } 

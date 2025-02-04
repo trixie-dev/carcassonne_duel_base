@@ -2,116 +2,33 @@ import { BOARD_SIZE, INITIAL_BOARD, LANDSCAPE, BORDER_TILES, BORDER_RULES, CORNE
 import { getTileSide, canPlaceTileNextTo } from './TileUtils.js';
 
 export class Board {
-    constructor() {
+    constructor(scoreBoard) {
         console.log('Initializing Board...');
+        if (!scoreBoard) {
+            throw new Error('ScoreBoard is required for Board initialization');
+        }
+        this.scoreBoard = scoreBoard;
+        this.cells = Array(BOARD_SIZE).fill(null).map(() => Array(BOARD_SIZE).fill(null));
+        
         try {
-            this.initializeBoard();
+            this.createBoardElements();
+            this.initializeBorders();
+            console.log('Board created successfully');
         } catch (error) {
             console.error('Error creating board:', error);
             throw error;
         }
     }
 
-    initializeBoard() {
-        // Очищаємо попередню дошку, якщо вона існує
-        const gameBoard = document.getElementById('gameBoard');
-        if (gameBoard) {
-            gameBoard.innerHTML = '';
-        }
-
-        // Створюємо нову пусту дошку
-        this.cells = Array(BOARD_SIZE).fill(null).map(() => Array(BOARD_SIZE).fill(null));
-        
-        // Створюємо елементи дошки
-        this.createBoard();
-        
-        // Ініціалізуємо границі
-        this.initializeBorders();
-        
-        console.log('Board created successfully');
-    }
-
-    // Рандомне розміщення тайлів на границі
-    initializeBorders() {
-        // Створюємо масиви доступних позицій для кожної сторони (без кутів)
-        const topPositions = Array.from({length: BOARD_SIZE-2}, (_, i) => [0, i+1]);
-        const rightPositions = Array.from({length: BOARD_SIZE-2}, (_, i) => [i+1, BOARD_SIZE-1]);
-        const bottomPositions = Array.from({length: BOARD_SIZE-2}, (_, i) => [BOARD_SIZE-1, i+1]);
-        const leftPositions = Array.from({length: BOARD_SIZE-2}, (_, i) => [i+1, 0]);
-
-        // Функція для випадкового вибору позицій
-        const getRandomPositions = (positions, count) => {
-            const shuffled = [...positions].sort(() => Math.random() - 0.5);
-            return shuffled.slice(0, count);
-        };
-
-        // Розміщуємо міста (по одному на кожній стороні)
-        const placeCities = () => {
-            // Для кожної сторони вибираємо одну випадкову позицію для міста
-            const topCity = getRandomPositions(topPositions, 1)[0];
-            const rightCity = getRandomPositions(rightPositions, 1)[0];
-            const bottomCity = getRandomPositions(bottomPositions, 1)[0];
-            const leftCity = getRandomPositions(leftPositions, 1)[0];
-
-            // Розміщуємо міста, вибираючи випадковий тайл з відповідного набору
-            this.placeTile(topCity[0], topCity[1], 
-                BORDER_TILES.top[Math.floor(Math.random() * BORDER_TILES.top.length)], 0);
-            this.placeTile(rightCity[0], rightCity[1], 
-                BORDER_TILES.right[Math.floor(Math.random() * BORDER_TILES.right.length)], 90);
-            this.placeTile(bottomCity[0], bottomCity[1], 
-                BORDER_TILES.bottom[Math.floor(Math.random() * BORDER_TILES.bottom.length)], 180);
-            this.placeTile(leftCity[0], leftCity[1], 
-                BORDER_TILES.left[Math.floor(Math.random() * BORDER_TILES.left.length)], 270);
-
-            // Видаляємо використані позиції
-            [topCity, rightCity, bottomCity, leftCity].forEach(pos => {
-                const arrays = [topPositions, rightPositions, bottomPositions, leftPositions];
-                arrays.forEach(arr => {
-                    const index = arr.findIndex(p => p[0] === pos[0] && p[1] === pos[1]);
-                    if (index !== -1) arr.splice(index, 1);
-                });
-            });
-        };
-
-        // Розміщуємо дороги (по дві на кожній стороні)
-        const placeRoads = () => {
-            // Для кожної сторони вибираємо дві випадкові позиції для доріг
-            const topRoads = getRandomPositions(topPositions, 2);
-            const rightRoads = getRandomPositions(rightPositions, 2);
-            const bottomRoads = getRandomPositions(bottomPositions, 2);
-            const leftRoads = getRandomPositions(leftPositions, 2);
-
-            // Розміщуємо дороги
-            topRoads.forEach(pos => {
-                this.placeTile(pos[0], pos[1], 'FRRF', 0);
-            });
-            rightRoads.forEach(pos => {
-                this.placeTile(pos[0], pos[1], 'FRRF', 90);
-            });
-            bottomRoads.forEach(pos => {
-                this.placeTile(pos[0], pos[1], 'FRRF', 180);
-            });
-            leftRoads.forEach(pos => {
-                this.placeTile(pos[0], pos[1], 'FRRF', 270);
-            });
-        };
-
-        // Розміщуємо кути (завжди поля)
-        CORNERS.forEach(([row, col]) => {
-            this.placeTile(row, col, 'FFRF', 0);
-        });
-
-        // Виконуємо розміщення
-        placeCities();
-        placeRoads();
-    }
-
-    createBoard() {
+    createBoardElements() {
         console.log('Creating board elements...');
         const gameBoard = document.getElementById('gameBoard');
         if (!gameBoard) {
             throw new Error('Game board element not found');
         }
+
+        // Очищаємо попередню дошку
+        gameBoard.innerHTML = '';
 
         gameBoard.style.gridTemplateColumns = `repeat(${BOARD_SIZE}, 70px)`;
         gameBoard.style.gridTemplateRows = `repeat(${BOARD_SIZE}, 70px)`;
@@ -123,7 +40,6 @@ export class Board {
                 cell.dataset.row = row;
                 cell.dataset.col = col;
                 
-                // Додаємо контейнер для тайлу
                 const tileContainer = document.createElement('div');
                 tileContainer.className = 'tile-container';
                 cell.appendChild(tileContainer);
@@ -134,42 +50,170 @@ export class Board {
         console.log('Board elements created');
     }
 
+    // Рандомне розміщення тайлів на границі
+    initializeBorders() {
+        console.log('Initializing board borders...');
+        
+        // Створюємо масиви доступних позицій для кожної сторони
+        const topPositions = Array.from({length: BOARD_SIZE}, (_, i) => [0, i]);
+        const rightPositions = Array.from({length: BOARD_SIZE}, (_, i) => [i, BOARD_SIZE-1]);
+        const bottomPositions = Array.from({length: BOARD_SIZE}, (_, i) => [BOARD_SIZE-1, i]);
+        const leftPositions = Array.from({length: BOARD_SIZE}, (_, i) => [i, 0]);
+
+        // Функція для випадкового вибору позицій
+        const getRandomPositions = (positions, count) => {
+            const shuffled = [...positions].sort(() => Math.random() - 0.5);
+            return shuffled.slice(0, count);
+        };
+
+        // Розміщуємо міста (по одному на кожній стороні)
+        console.log('Placing city tiles...');
+        const placeCities = () => {
+            // Для кожної сторони вибираємо одну випадкову позицію для міста
+            const topCity = getRandomPositions(topPositions, 1)[0];
+            const rightCity = getRandomPositions(rightPositions, 1)[0];
+            const bottomCity = getRandomPositions(bottomPositions, 1)[0];
+            const leftCity = getRandomPositions(leftPositions, 1)[0];
+
+            // Розміщуємо міста
+            this.cells[topCity[0]][topCity[1]] = {
+                type: 'CFRF',
+                rotation: 0,
+                owner: null
+            };
+            this.updateCell(topCity[0], topCity[1]);
+
+            this.cells[rightCity[0]][rightCity[1]] = {
+                type: 'CFRF',
+                rotation: 90,
+                owner: null
+            };
+            this.updateCell(rightCity[0], rightCity[1]);
+
+            this.cells[bottomCity[0]][bottomCity[1]] = {
+                type: 'CFRF',
+                rotation: 180,
+                owner: null
+            };
+            this.updateCell(bottomCity[0], bottomCity[1]);
+
+            this.cells[leftCity[0]][leftCity[1]] = {
+                type: 'CFRF',
+                rotation: 270,
+                owner: null
+            };
+            this.updateCell(leftCity[0], leftCity[1]);
+
+            // Видаляємо використані позиції з масивів
+            [topCity, rightCity, bottomCity, leftCity].forEach(pos => {
+                const arrays = [topPositions, rightPositions, bottomPositions, leftPositions];
+                arrays.forEach(arr => {
+                    const index = arr.findIndex(p => p[0] === pos[0] && p[1] === pos[1]);
+                    if (index !== -1) arr.splice(index, 1);
+                });
+            });
+        };
+
+        // Розміщуємо дороги (по дві на кожній стороні)
+        console.log('Placing road tiles...');
+        const placeRoads = () => {
+            // Для кожної сторони вибираємо дві випадкові позиції для доріг
+            const topRoads = getRandomPositions(topPositions, 2);
+            const rightRoads = getRandomPositions(rightPositions, 2);
+            const bottomRoads = getRandomPositions(bottomPositions, 2);
+            const leftRoads = getRandomPositions(leftPositions, 2);
+
+            // Розміщуємо дороги
+            topRoads.forEach(pos => {
+                console.log(`Placing road tile at (${pos[0]}, ${pos[1]}) with rotation 0`);
+                this.cells[pos[0]][pos[1]] = {
+                    type: 'FRRF',
+                    rotation: 0,
+                    owner: null
+                };
+                this.updateCell(pos[0], pos[1]);
+            });
+
+            rightRoads.forEach(pos => {
+                console.log(`Placing road tile at (${pos[0]}, ${pos[1]}) with rotation 90`);
+                this.cells[pos[0]][pos[1]] = {
+                    type: 'FRRF',
+                    rotation: 90,
+                    owner: null
+                };
+                this.updateCell(pos[0], pos[1]);
+            });
+
+            bottomRoads.forEach(pos => {
+                console.log(`Placing road tile at (${pos[0]}, ${pos[1]}) with rotation 180`);
+                this.cells[pos[0]][pos[1]] = {
+                    type: 'FRRF',
+                    rotation: 180,
+                    owner: null
+                };
+                this.updateCell(pos[0], pos[1]);
+            });
+
+            leftRoads.forEach(pos => {
+                console.log(`Placing road tile at (${pos[0]}, ${pos[1]}) with rotation 270`);
+                this.cells[pos[0]][pos[1]] = {
+                    type: 'FRRF',
+                    rotation: 270,
+                    owner: null
+                };
+                this.updateCell(pos[0], pos[1]);
+            });
+        };
+
+        // Виконуємо розміщення в правильному порядку
+        placeCities();  // Спочатку розміщуємо міста
+        placeRoads();   // Потім розміщуємо дороги
+        console.log('Board borders initialized');
+    }
+
     isEmptyCell(row, col) {
         return row >= 0 && row < BOARD_SIZE && col >= 0 && col < BOARD_SIZE && this.cells[row][col] === null;
     }
 
-    placeTile(row, col, type, rotation = 0) {
-        console.log('Placing tile:', { row, col, type, rotation });
+    placeTile(row, col, type, rotation) {
+        console.log(`Placing tile at (${row}, ${col}) with type ${type} and rotation ${rotation}`);
         
-        if (this.isEmptyCell(row, col)) {
-            // Отримуємо тип тайлу
-            let tileType;
-            if (typeof type === 'string') {
-                tileType = type;
-            } else if (type && typeof type === 'object' && type.type) {
-                tileType = type.type;
-            } else {
-                console.error('Invalid tile type:', type);
-                return false;
-            }
-            
-            console.log('Using tile type:', tileType);
-            
-            // Нормалізуємо поворот
-            const normalizedRotation = Number(rotation) || 0;
-            
-            // Створюємо тайл
+        if (this.isValidPlacement(row, col, type, rotation)) {
             this.cells[row][col] = {
-                type: tileType,
-                rotation: normalizedRotation,
-                owner: null
+                type: type,
+                rotation: rotation,
+                owner: this.scoreBoard.currentPlayer
             };
             
-            // Оновлюємо відображення
+            console.log(`Tile placed in this.cells:`, this.cells[row][col]);
+            console.log('Current board state:', JSON.stringify(this.cells));
+            
+            // Перевіряємо сусідні клітинки після розміщення
+            const adjacentCells = [
+                { row: row - 1, col: col, direction: 'top' },
+                { row: row, col: col + 1, direction: 'right' },
+                { row: row + 1, col: col, direction: 'bottom' },
+                { row: row, col: col - 1, direction: 'left' }
+            ];
+            
+            console.log('Checking adjacent cells after placement:');
+            for (let cell of adjacentCells) {
+                if (this.isValidCell(cell.row, cell.col)) {
+                    console.log(`Adjacent cell at (${cell.row}, ${cell.col}):`, this.cells[cell.row][cell.col]);
+                }
+            }
+            
             this.updateCell(row, col);
+            
+            const points = this.calculatePoints(row, col);
+            this.scoreBoard.addPoints(points);
+            
+            console.log('Tile placed successfully');
             return true;
+        } else {
+            console.error('Invalid tile placement');
+            return false;
         }
-        return false;
     }
 
     updateCell(row, col) {
@@ -251,12 +295,6 @@ export class Board {
             return false;
         }
 
-        // Перевірка чи є це першим ходом
-        if (this.isEmpty()) {
-            console.log('First move, placement is valid');
-            return true;
-        }
-
         // Перевірка сусідніх клітинок
         const adjacentCells = [
             { row: row - 1, col: col, direction: 'top' },    // Верхня
@@ -268,13 +306,16 @@ export class Board {
         let hasAdjacentTile = false;
 
         for (let cell of adjacentCells) {
+            console.log(`Checking adjacent cell at (${cell.row}, ${cell.col})`);
             if (this.isValidCell(cell.row, cell.col)) {
                 const adjacentTile = this.cells[cell.row][cell.col];
+                console.log(`Adjacent tile:`, adjacentTile);
                 if (adjacentTile) {
                     hasAdjacentTile = true;
                     const isCompatible = canPlaceTileNextTo(tileType, rotation, adjacentTile.type, adjacentTile.rotation, cell.direction);
-                    console.log(`Checking adjacent tile at (${cell.row}, ${cell.col}): ${adjacentTile.type} with rotation ${adjacentTile.rotation}`);
-                    console.log(`Compatibility check with ${cell.direction} tile: ${isCompatible}`);
+                    console.log(`Checking compatibility with ${cell.direction} tile: ${isCompatible}`);
+                    console.log(`New tile: ${tileType} (rotation: ${rotation})`);
+                    console.log(`Adjacent tile: ${adjacentTile.type} (rotation: ${adjacentTile.rotation})`);
                     if (!isCompatible) {
                         console.log('Adjacent tile is not compatible');
                         return false;
@@ -283,8 +324,6 @@ export class Board {
             }
         }
 
-        console.log(`Has adjacent tile: ${hasAdjacentTile}`);
-        
         if (!hasAdjacentTile) {
             console.log('No adjacent tiles found');
             return false;
@@ -300,17 +339,24 @@ export class Board {
     }
 
     isEmpty() {
-        for (let row = 0; row < BOARD_SIZE; row++) {
-            for (let col = 0; col < BOARD_SIZE; col++) {
+        console.log('Checking if board is empty (excluding borders)...');
+        // Перевіряємо тільки внутрішні клітинки (без границь)
+        for (let row = 1; row < BOARD_SIZE - 1; row++) {
+            for (let col = 1; col < BOARD_SIZE - 1; col++) {
                 if (this.cells[row][col] !== null) {
+                    console.log(`Found tile at (${row}, ${col})`);
                     return false;
                 }
             }
         }
+        console.log('Board is empty (excluding borders)');
         return true;
     }
 
     isValidCell(row, col) {
-        return row >= 0 && row < BOARD_SIZE && col >= 0 && col < BOARD_SIZE;
+        console.log(`Checking if cell (${row}, ${col}) is valid`);
+        const isValid = row >= 0 && row < BOARD_SIZE && col >= 0 && col < BOARD_SIZE;
+        console.log(`Cell (${row}, ${col}) is ${isValid ? 'valid' : 'invalid'}`);
+        return isValid;
     }
 }

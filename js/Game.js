@@ -7,14 +7,14 @@ export class Game {
         console.log('Creating game components...');
         
         try {
-            this.board = new Board();
+            this.scoreBoard = new ScoreBoard();
+            console.log('ScoreBoard created');
+            
+            this.board = new Board(this.scoreBoard);
             console.log('Board created');
             
             this.tileStack = new TileStack();
             console.log('TileStack created');
-            
-            this.scoreBoard = new ScoreBoard();
-            console.log('ScoreBoard created');
             
             this.initializeGame();
             this.bindEvents();
@@ -116,18 +116,25 @@ export class Game {
 
     restartGame() {
         console.log('Restarting game');
-        this.board = new Board();
-        this.tileStack.reset();
+        
+        // Спочатку скидаємо всі компоненти
         this.scoreBoard.reset();
+        this.tileStack.reset();
         
-        // Перевірка стану гри після перезапуску
-        console.log('Game state after restart:', {
-            board: this.board,
-            tileStack: this.tileStack,
-            scoreBoard: this.scoreBoard
-        });
-        
-        // Повторно прив'язуємо обробники подій
-        this.bindEvents();
+        try {
+            // Створюємо нову дошку з існуючим scoreBoard
+            this.board = new Board(this.scoreBoard);
+            
+            // Ініціалізуємо гру
+            this.initializeGame();
+            
+            // Оновлюємо обробники подій
+            this.bindEvents();
+            
+            console.log('Game restarted successfully');
+        } catch (error) {
+            console.error('Error restarting game:', error);
+            throw error;
+        }
     }
 }
