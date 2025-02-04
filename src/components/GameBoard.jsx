@@ -3,8 +3,8 @@ import styled from 'styled-components'
 
 const BoardContainer = styled.div`
   display: grid;
-  grid-template-columns: repeat(7, 100px);
-  grid-template-rows: repeat(7, 100px);
+  grid-template-columns: repeat(10, 100px);
+  grid-template-rows: repeat(10, 100px);
   gap: 2px;
   background-color: #2c3e50;
   padding: 10px;
@@ -23,8 +23,8 @@ const Cell = styled.div`
 `
 
 function GameBoard() {
-  // Створюємо порожню сітку 7x7
-  const grid = Array(7).fill(null).map(() => Array(7).fill(null))
+  // Створюємо порожню сітку 10x10
+  const grid = Array(10).fill(null).map(() => Array(10).fill(null))
 
   return (
     <BoardContainer>

@@ -50,7 +50,7 @@ export class Game {
         if (currentTile) {
             currentTile.addEventListener('click', () => {
                 console.log('Rotating tile');
-                this.tileStack.rotateTile();
+                this.tileStack.rotateCurrentTile();
             });
         } else {
             console.error('currentTile element not found');
@@ -67,13 +67,29 @@ export class Game {
     }
 
     handleCellClick(row, col) {
-        console.log(`Handling cell click at ${row}, ${col}`);
-        // Базова логіка для тестування
-        if (this.board.isEmptyCell(row, col)) {
-            this.board.placeTile(row, col, this.tileStack.currentTile, this.scoreBoard.currentPlayer);
-            this.tileStack.drawNextTile();
-            this.scoreBoard.switchPlayer();
+        console.log('Cell click handled at', row, col);
+        
+        if (this.tileStack.currentTile) {
+            const currentTile = this.tileStack.currentTile;
+            console.log('Current tile:', currentTile);
+            
+            // Отримуємо тип тайлу як рядок
+            const tileType = currentTile.type;
+            const rotation = currentTile.rotation || 0;
+            
+            if (this.board.isValidPlacement(row, col, tileType, rotation)) {
+                // Розміщуємо тайл
+                const success = this.board.placeTile(row, col, tileType, rotation);
+                
+                if (success) {
+                    // Оновлюємо стан гри
+                    this.scoreBoard.switchPlayer();
+                    this.tileStack.drawNextTile();
+                }
+                return success;
+            }
         }
+        return false;
     }
 
     skipTurn() {
@@ -92,5 +108,15 @@ export class Game {
         this.board = new Board();
         this.tileStack.reset();
         this.scoreBoard.reset();
+        
+        // Перевірка стану гри після перезапуску
+        console.log('Game state after restart:', {
+            board: this.board,
+            tileStack: this.tileStack,
+            scoreBoard: this.scoreBoard
+        });
+        
+        // Повторно прив'язуємо обробники подій
+        this.bindEvents();
     }
 }

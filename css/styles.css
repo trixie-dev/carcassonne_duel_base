@@ -1,0 +1,46 @@
+.cell {
+    width: 70px;
+    height: 70px;
+    border: 1px solid #ccc;
+    position: relative;
+    box-sizing: border-box;
+    background-color: transparent;
+    overflow: visible;
+    z-index: 1;
+}
+
+.tile-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+#currentTile {
+    width: 70px;
+    height: 70px;
+    border: 2px solid #333;
+    margin: 10px auto;
+    background-size: 100% 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    cursor: pointer;
+    transform-origin: center center;
+    position: relative;
+    z-index: 3;
+    transition: transform 0.3s ease;
+}
+
+.has-tile {
+    background-color: transparent;
+}
+
+.player1 {
+    border: 2px solid #e74c3c;
+}
+
+.player2 {
+    border: 2px solid #3498db;
+} 
+} 

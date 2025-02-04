@@ -1,4 +1,4 @@
-export const BOARD_SIZE = 9;
+export const BOARD_SIZE = 10;
 
 // Типи ландшафту
 export const LANDSCAPE = {
@@ -7,91 +7,46 @@ export const LANDSCAPE = {
     FIELD: 'F'
 };
 
-// Початкова матриця поля (null означає порожню клітинку)
-export const INITIAL_BOARD = [
-    // Верхній рядок (0)
-    ['FFFF', 'RFFF', 'CFFF', 'RFFF', 'CFFF', 'RFFF', 'CFFF', 'RFFF', 'FFFF'],
-    // Рядок 1
-    ['FFFR', null, null, null, null, null, null, null, 'FRFF'],
-    // Рядок 2
-    ['FFFC', null, null, null, null, null, null, null, 'FCFF'],
-    // Рядок 3
-    ['FFFR', null, null, null, null, null, null, null, 'FRFF'],
-    // Рядок 4
-    ['FFFC', null, null, null, null, null, null, null, 'FCFF'],
-    // Рядок 5
-    ['FFFR', null, null, null, null, null, null, null, 'FRFF'],
-    // Рядок 6
-    ['FFFC', null, null, null, null, null, null, null, 'FCFF'],
-    // Рядок 7
-    ['FFFR', null, null, null, null, null, null, null, 'FRFF'],
-    // Нижній рядок (8)
-    ['FFFF', 'FFRF', 'FFCF', 'FFRF', 'FFCF', 'FFRF', 'FFCF', 'FFRF', 'FFFF']
-];
-
 // Конфігурація тайлів для гри (тип та кількість)
 export const TILE_CONFIG = {
-    'CCRF': 4,
-    'CCFR': 4,
-    'CFRF': 11,
-    'CRRF': 9,
-    'CRFF': 9,
-    'FFCR': 4,
-    'FFRF': 4,
-    'FRRF': 9,
-    'FFCC': 4,
-    'RRFF': 6
+    'CCRF': 4,  // Місто-Місто-Дорога-Поле
+    'CCFR': 4,  // Місто-Місто-Поле-Дорога
+    'CFRF': 11, // Місто-Поле-Дорога-Поле
+    'CRRF': 9,  // Місто-Дорога-Дорога-Поле
+    'CRFF': 9,  // Місто-Дорога-Поле-Поле
+    'FFCR': 4,  // Поле-Поле-Місто-Дорога
+    'FFRF': 4,  // Поле-Поле-Дорога-Поле
+    'FRRF': 9,  // Поле-Дорога-Дорога-Поле
+    'FFCC': 4,  // Поле-Поле-Місто-Місто
+    'RRFF': 6   // Дорога-Дорога-Поле-Поле
 };
 
-// Початкові фіксовані міста та дороги на границях
-export const FIXED_BORDERS = {
-    cities: [
-        // Верхня границя
-        { position: [0, 2], edges: 'CFFF' },
-        { position: [0, 4], edges: 'CFFF' },
-        { position: [0, 6], edges: 'CFFF' },
-        // Права границя
-        { position: [2, 8], edges: 'FCFF' },
-        { position: [4, 8], edges: 'FCFF' },
-        { position: [6, 8], edges: 'FCFF' },
-        // Нижня границя
-        { position: [8, 2], edges: 'FFCF' },
-        { position: [8, 4], edges: 'FFCF' },
-        { position: [8, 6], edges: 'FFCF' },
-        // Ліва границя
-        { position: [2, 0], edges: 'FFFC' },
-        { position: [4, 0], edges: 'FFFC' },
-        { position: [6, 0], edges: 'FFFC' }
-    ],
-    roads: [
-        // Верхня границя
-        { position: [0, 1], edges: 'RFFF' },
-        { position: [0, 3], edges: 'RFFF' },
-        { position: [0, 5], edges: 'RFFF' },
-        { position: [0, 7], edges: 'RFFF' },
-        // Права границя
-        { position: [1, 8], edges: 'FRFF' },
-        { position: [3, 8], edges: 'FRFF' },
-        { position: [5, 8], edges: 'FRFF' },
-        { position: [7, 8], edges: 'FRFF' },
-        // Нижня границя
-        { position: [8, 1], edges: 'FFRF' },
-        { position: [8, 3], edges: 'FFRF' },
-        { position: [8, 5], edges: 'FFRF' },
-        { position: [8, 7], edges: 'FFRF' },
-        // Ліва границя
-        { position: [1, 0], edges: 'FFFR' },
-        { position: [3, 0], edges: 'FFFR' },
-        { position: [5, 0], edges: 'FFFR' },
-        { position: [7, 0], edges: 'FFFR' }
-    ],
-    corners: [
-        { position: [0, 0], edges: 'FFFF' },  // Верхній лівий кут
-        { position: [0, 8], edges: 'FFFF' },  // Верхній правий кут
-        { position: [8, 8], edges: 'FFFF' },  // Нижній правий кут
-        { position: [8, 0], edges: 'FFFF' }   // Нижній лівий кут
-    ]
+// Можливі тайли для границі
+export const BORDER_TILES = {
+    top: ['CFRF', 'CRFF', 'CRRF'], // Тайли з містом зверху
+    right: ['FFCR', 'CCFR'], // Тайли з містом справа
+    bottom: ['FFCC', 'FFCR'], // Тайли з містом знизу
+    left: ['FFCR', 'CCFR'] // Тайли з містом зліва
 };
+
+// Початкова матриця поля (null означає порожню клітинку)
+export const INITIAL_BOARD = Array(BOARD_SIZE).fill(null).map(() => Array(BOARD_SIZE).fill(null));
+
+// Правила для границь
+export const BORDER_RULES = {
+    cityCount: 4,  // Кількість міст на границі
+    roadCount: 8,  // Кількість доріг на границі
+    citiesPerSide: 1, // Кількість міст на кожній стороні
+    roadsPerSide: 2  // Кількість доріг на кожній стороні
+};
+
+// Кутові клітинки
+export const CORNERS = [
+    [0, 0],           // Верхній лівий кут
+    [0, BOARD_SIZE-1],    // Верхній правий кут
+    [BOARD_SIZE-1, 0],    // Нижній лівий кут
+    [BOARD_SIZE-1, BOARD_SIZE-1]  // Нижній правий кут
+];
 
 // Кількість джокерів на гравця
 export const JOKERS_PER_PLAYER = 2;
