@@ -65,16 +65,16 @@ export function getRotatedSides(tileType, rotation) {
  */
 export function canPlaceTileNextTo(newTileType, newRotation, existingTileType, existingRotation, direction) {
     console.log('\n=== Starting canPlaceTileNextTo ===');
-    console.log(`New tile: ${newTileType}`);
-    console.log(`Existing tile: ${existingTileType}`);
+    console.log(`New tile: ${newTileType} (rotation: ${newRotation})`);
+    console.log(`Existing tile: ${existingTileType} (rotation: ${existingRotation})`);
     console.log(`Direction: ${direction}`);
 
-    // Отримуємо сторони тайлів
-    const newSides = newTileType.split('');
-    const existingSides = existingTileType.split('');
+    // Отримуємо сторони тайлів з урахуванням поворотів
+    const newSides = getRotatedSides(newTileType, newRotation).split('');
+    const existingSides = getRotatedSides(existingTileType, existingRotation).split('');
     
-    console.log('New sides array:', newSides);
-    console.log('Existing sides array:', existingSides);
+    console.log('New sides array (after rotation):', newSides);
+    console.log('Existing sides array (after rotation):', existingSides);
     
     let newSide, existingSide;
     
@@ -89,20 +89,16 @@ export function canPlaceTileNextTo(newTileType, newRotation, existingTileType, e
             newSide = newSides[1];      // RIGHT нового
             existingSide = existingSides[3]; // LEFT існуючого
             break;
-
         case 'bottom': // Новий тайл зверху
             newSide = newSides[2];      // BOTTOM нового
             existingSide = existingSides[0]; // TOP існуючого
             break;
         case 'left': // Новий тайл справа
-
             newSide = newSides[3];      // LEFT нового
             existingSide = existingSides[1]; // RIGHT існуючого
             break;
-
         default:
             console.error('Invalid direction:', direction);
-
             return false;
     }
 
