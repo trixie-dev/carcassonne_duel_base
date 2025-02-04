@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tile Preview</title>
+    <style>
+        body {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            padding: 20px;
+            background: #2c3e50;
+        }
+        .tile {
+            width: 200px;
+            height: 200px;
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        .tile img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        .controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        button {
+            margin: 5px;
+            padding: 5px 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="controls">
+        <button onclick="rotateTiles(-90)">⟲ Rotate Left</button>
+        <button onclick="rotateTiles(90)">⟳ Rotate Right</button>
+    </div>
+    <div class="tile">
+        <img src="assets/tiles/CCRF.svg" alt="CCRF" id="tile1">
+    </div>
+    <script>
+        let rotation = 0;
+        function rotateTiles(deg) {
+            rotation = (rotation + deg) % 360;
+            document.querySelectorAll('.tile img').forEach(img => {
+                img.style.transform = `rotate(${rotation}deg)`;
+            });
+        }
+    </script>
+</body>
+</html> 

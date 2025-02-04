@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 100 100">
+    <!-- Імпортуємо текстури -->
+    <defs>
+        <pattern id="fieldTexture" width="20" height="20" patternUnits="userSpaceOnUse">
+            <rect width="20" height="20" fill="#7cb342"/>
+            <circle cx="5" cy="5" r="1" fill="#558b2f"/>
+            <circle cx="15" cy="15" r="1" fill="#558b2f"/>
+            <path d="M10,2 L12,6 L8,6 Z" fill="#558b2f"/>
+        </pattern>
+
+        <pattern id="cityTexture" width="30" height="30" patternUnits="userSpaceOnUse">
+            <rect width="30" height="30" fill="#8d6e63"/>
+            <rect x="0" y="0" width="15" height="15" fill="#6d4c41"/>
+            <rect x="15" y="15" width="15" height="15" fill="#6d4c41"/>
+            <path d="M0,0 L5,0 L5,10 L0,10 Z" fill="#4e342e"/>
+            <path d="M20,20 L25,20 L25,30 L20,30 Z" fill="#4e342e"/>
+        </pattern>
+    </defs>
+
+    <!-- Фон поля -->
+    <rect width="100" height="100" fill="url(#fieldTexture)"/>
+
+    <!-- Верхнє місто -->
+    <path d="M10,0 h80 v35 
+             Q 80,30 70,25
+             Q 55,20 35,15
+             Q 20,10 15,5 Z" 
+          fill="url(#cityTexture)"/>
+    
+    <!-- Нижнє місто -->
+    <path d="M10,100 h80 v-35 
+             Q 80,70 70,75
+             Q 55,80 35,85
+             Q 20,90 15,95 Z" 
+          fill="url(#cityTexture)"/>
+    
+    <!-- Стіни верхнього міста -->
+    <path d="M15,0 v15 h10 v-8 h10 v8 h10 v-15" fill="#4e342e"/>
+    <path d="M75,0 v25 h-8 v10 h8 v5" fill="#4e342e"/>
+    
+    <!-- Стіни нижнього міста -->
+    <path d="M15,100 v-15 h10 v8 h10 v-8 h10 v15" fill="#4e342e"/>
+    <path d="M75,100 v-25 h-8 v-10 h8 v-5" fill="#4e342e"/>
+    
+    <!-- Обрамлення верхнього міста -->
+    <path d="M15,5 Q 20,10 35,15 Q 55,20 70,25 Q 80,30 85,35" 
+          stroke="#3e2723" stroke-width="3" fill="none"/>
+    
+    <!-- Обрамлення нижнього міста -->
+    <path d="M15,95 Q 20,90 35,85 Q 55,80 70,75 Q 80,70 85,65" 
+          stroke="#3e2723" stroke-width="3" fill="none"/>
+
+    <!-- Додаткове обрамлення для чітких границь -->
+    <path d="M10,0 L15,5" stroke="#3e2723" stroke-width="3" fill="none"/>
+    <path d="M10,100 L15,95" stroke="#3e2723" stroke-width="3" fill="none"/>
+
+    <!-- Декоративні елементи (будівлі) верхнього міста -->
+    <rect x="35" y="5" width="12" height="12" fill="#4e342e"/>
+    <rect x="65" y="15" width="12" height="12" fill="#4e342e"/>
+    <circle cx="55" cy="8" r="4" fill="#4e342e"/>
+    <circle cx="75" cy="25" r="4" fill="#4e342e"/>
+
+    <!-- Декоративні елементи (будівлі) нижнього міста -->
+    <rect x="35" y="83" width="12" height="12" fill="#4e342e"/>
+    <rect x="65" y="73" width="12" height="12" fill="#4e342e"/>
+    <circle cx="55" cy="92" r="4" fill="#4e342e"/>
+    <circle cx="75" cy="75" r="4" fill="#4e342e"/>
+</svg> 
