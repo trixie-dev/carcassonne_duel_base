@@ -20,16 +20,62 @@ export const SIDE_INDEX = {
  * @returns {string} - Рядок з поверненими сторонами
  */
 export function getRotatedSides(tileType, rotation) {
-    const normalizedRotation = ((rotation % 360) + 360) % 360; // Нормалізуємо поворот до 0-359
-    const shifts = normalizedRotation / 90; // Кількість зсувів
+    // Просто повертаємо оригінальні сторони без обертання
+    return tileType;
+}
+
+/**
+ * Перевіряє чи можна розмістити тайл біля існуючого
+ * @param {string} newTileType - Тип нового тайлу
+ * @param {number} newRotation - Поворот нового тайлу
+ * @param {string} existingTileType - Тип існуючого тайлу
+ * @param {number} existingRotation - Поворот існуючого тайлу
+ * @param {string} direction - Напрямок розміщення ('top', 'right', 'bottom', 'left')
+ * @returns {boolean} - true якщо тайли сумісні
+ */
+export function canPlaceTileNextTo(newTileType, newRotation, existingTileType, existingRotation, direction) {
+    console.log('\n=== Starting canPlaceTileNextTo ===');
+    console.log(`New tile: ${newTileType}`);
+    console.log(`Existing tile: ${existingTileType}`);
+    console.log(`Direction: ${direction}`);
+
+    // Отримуємо сторони тайлів
+    const newSides = newTileType.split('');
+    const existingSides = existingTileType.split('');
     
-    // Перетворюємо рядок на масив і робимо зсув
-    let sides = tileType.split('');
-    for (let i = 0; i < shifts; i++) {
-        sides.unshift(sides.pop());
+    console.log('New sides array:', newSides);
+    console.log('Existing sides array:', existingSides);
+    
+    let newSide, existingSide;
+    
+    // Визначаємо, які сторони мають з'єднуватися
+    switch (direction) {
+        case 'top': // Новий тайл зверху - його низ має співпадати з верхом існуючого
+            newSide = newSides[2]; // BOTTOM
+            existingSide = existingSides[0]; // TOP
+            break;
+        case 'right': // Новий тайл справа - його лівий бік має співпадати з правим боком існуючого
+            newSide = newSides[3]; // LEFT
+            existingSide = existingSides[1]; // RIGHT
+            break;
+        case 'bottom': // Новий тайл знизу - його верх має співпадати з низом існуючого
+            newSide = newSides[0]; // TOP
+            existingSide = existingSides[2]; // BOTTOM
+            break;
+        case 'left': // Новий тайл зліва - його правий бік має співпадати з лівим боком існуючого
+            newSide = newSides[1]; // RIGHT
+            existingSide = existingSides[3]; // LEFT
+            break;
+        default:
+            console.error('Invalid direction:', direction);
+            return false;
     }
+
+    console.log(`Checking sides: ${newSide} and ${existingSide}`);
+    const isCompatible = areSidesCompatible(newSide, existingSide);
+    console.log(`Compatible: ${isCompatible}`);
     
-    return sides.join('');
+    return isCompatible;
 }
 
 /**
@@ -39,7 +85,7 @@ export function getRotatedSides(tileType, rotation) {
  * @returns {boolean} - true якщо сторони сумісні
  */
 export function areSidesCompatible(side1, side2) {
-    console.log(`Checking compatibility between sides: ${side1} and ${side2}`);
+    console.log(`\nChecking compatibility between sides: ${side1} and ${side2}`);
     
     // Перевіряємо, що обидві сторони мають допустимі значення
     if (!Object.values(TILE_SIDES).includes(side1) || !Object.values(TILE_SIDES).includes(side2)) {
@@ -47,9 +93,20 @@ export function areSidesCompatible(side1, side2) {
         return false;
     }
 
-    // Сторони повинні бути однакового типу
+    // Правила сумісності:
+    // 1. Місто (C) має з'єднуватися з містом (C)
+    // 2. Дорога (R) має з'єднуватися з дорогою (R)
+    // 3. Поле (F) має з'єднуватися з полем (F)
     const isCompatible = side1 === side2;
-    console.log(`Sides compatibility result: ${isCompatible}`);
+    
+    // Додаткове логування для діагностики
+    if (!isCompatible) {
+        console.log(`Incompatible sides: ${side1} cannot connect to ${side2}`);
+        console.log(`Required: ${side1} should be equal to ${side2}`);
+    } else {
+        console.log(`Compatible sides: ${side1} matches ${side2}`);
+    }
+    
     return isCompatible;
 }
 
@@ -63,61 +120,4 @@ export function areSidesCompatible(side1, side2) {
 export function getTileSide(tileType, rotation, sideIndex) {
     const rotatedSides = getRotatedSides(tileType, rotation);
     return rotatedSides[sideIndex];
-}
-
-/**
- * Перевіряє чи можна розмістити тайл біля існуючого
- * @param {string} newTileType - Тип нового тайлу
- * @param {number} newRotation - Поворот нового тайлу
- * @param {string} existingTileType - Тип існуючого тайлу
- * @param {number} existingRotation - Поворот існуючого тайлу
- * @param {string} direction - Напрямок розміщення ('top', 'right', 'bottom', 'left')
- * @returns {boolean} - true якщо тайли сумісні
- */
-export function canPlaceTileNextTo(newTileType, newRotation, existingTileType, existingRotation, direction) {
-    console.log('=== Starting canPlaceTileNextTo ===');
-    console.log(`New tile: ${newTileType} (rotation: ${newRotation})`);
-    console.log(`Existing tile: ${existingTileType} (rotation: ${existingRotation})`);
-    console.log(`Direction: ${direction}`);
-
-    const newSides = getRotatedSides(newTileType, newRotation);
-    const existingSides = getRotatedSides(existingTileType, existingRotation);
-    
-    console.log('New tile sides:', newSides);
-    console.log('Existing tile sides:', existingSides);
-    
-    let newSide, existingSide;
-    
-    switch (direction) {
-        case 'top': // Новий тайл зверху
-            newSide = newSides[SIDE_INDEX.BOTTOM];
-            existingSide = existingSides[SIDE_INDEX.TOP];
-            console.log(`Top placement - comparing new bottom (${newSide}) with existing top (${existingSide})`);
-            break;
-        case 'right': // Новий тайл справа 
-            newSide = newSides[SIDE_INDEX.LEFT];
-            existingSide = existingSides[SIDE_INDEX.RIGHT];
-            console.log(`Right placement - comparing new left (${newSide}) with existing right (${existingSide})`);
-            break;
-        case 'bottom': // Новий тайл знизу
-            newSide = newSides[SIDE_INDEX.TOP];
-            existingSide = existingSides[SIDE_INDEX.BOTTOM];
-            console.log(`Bottom placement - comparing new top (${newSide}) with existing bottom (${existingSide})`);
-            break;
-        case 'left': // Новий тайл зліва
-            newSide = newSides[SIDE_INDEX.RIGHT];
-            existingSide = existingSides[SIDE_INDEX.LEFT];
-            console.log(`Left placement - comparing new right (${newSide}) with existing left (${existingSide})`);
-            break;
-        default:
-            console.error('Invalid direction:', direction);
-            return false;
-    }
-
-    // Перевіряємо сумісність сторін
-    const isCompatible = areSidesCompatible(newSide, existingSide);
-    console.log(`Sides compatibility check: ${newSide} vs ${existingSide} = ${isCompatible}`);
-    console.log('=== Finished canPlaceTileNextTo ===');
-    
-    return isCompatible;
 } 

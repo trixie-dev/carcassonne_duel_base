@@ -75,31 +75,35 @@ export class Board {
             const bottomCity = getRandomPositions(bottomPositions, 1)[0];
             const leftCity = getRandomPositions(leftPositions, 1)[0];
 
-            // Розміщуємо міста
+            // Розміщуємо міста з правильними поворотами
+            // Верхня сторона: місто
             this.cells[topCity[0]][topCity[1]] = {
-                type: 'CFRF',
+                type: 'CFRF',  // Місто-Поле-Дорога-Поле
                 rotation: 0,
                 owner: null
             };
             this.updateCell(topCity[0], topCity[1]);
 
+            // Права сторона: місто
             this.cells[rightCity[0]][rightCity[1]] = {
-                type: 'CFRF',
-                rotation: 90,
+                type: 'FFCR',  // Поле-Поле-Місто-Дорога
+                rotation: 0,
                 owner: null
             };
             this.updateCell(rightCity[0], rightCity[1]);
 
+            // Нижня сторона: місто
             this.cells[bottomCity[0]][bottomCity[1]] = {
-                type: 'CFRF',
-                rotation: 180,
+                type: 'FFCR',  // Поле-Поле-Місто-Дорога
+                rotation: 0,
                 owner: null
             };
             this.updateCell(bottomCity[0], bottomCity[1]);
 
+            // Ліва сторона: місто
             this.cells[leftCity[0]][leftCity[1]] = {
-                type: 'CFRF',
-                rotation: 270,
+                type: 'FFCR',  // Поле-Поле-Місто-Дорога
+                rotation: 0,
                 owner: null
             };
             this.updateCell(leftCity[0], leftCity[1]);
@@ -124,41 +128,45 @@ export class Board {
             const leftRoads = getRandomPositions(leftPositions, 2);
 
             // Розміщуємо дороги
+            // Верхня сторона: дороги
             topRoads.forEach(pos => {
-                console.log(`Placing road tile at (${pos[0]}, ${pos[1]}) with rotation 0`);
+                console.log(`Placing road tile at (${pos[0]}, ${pos[1]})`);
                 this.cells[pos[0]][pos[1]] = {
-                    type: 'FRRF',
+                    type: 'FRRF',  // Поле-Дорога-Дорога-Поле
                     rotation: 0,
                     owner: null
                 };
                 this.updateCell(pos[0], pos[1]);
             });
 
+            // Права сторона: дороги
             rightRoads.forEach(pos => {
-                console.log(`Placing road tile at (${pos[0]}, ${pos[1]}) with rotation 90`);
+                console.log(`Placing road tile at (${pos[0]}, ${pos[1]})`);
                 this.cells[pos[0]][pos[1]] = {
-                    type: 'FRRF',
-                    rotation: 90,
+                    type: 'FRRF',  // Поле-Дорога-Дорога-Поле
+                    rotation: 0,
                     owner: null
                 };
                 this.updateCell(pos[0], pos[1]);
             });
 
+            // Нижня сторона: дороги
             bottomRoads.forEach(pos => {
-                console.log(`Placing road tile at (${pos[0]}, ${pos[1]}) with rotation 180`);
+                console.log(`Placing road tile at (${pos[0]}, ${pos[1]})`);
                 this.cells[pos[0]][pos[1]] = {
-                    type: 'FRRF',
-                    rotation: 180,
+                    type: 'FRRF',  // Поле-Дорога-Дорога-Поле
+                    rotation: 0,
                     owner: null
                 };
                 this.updateCell(pos[0], pos[1]);
             });
 
+            // Ліва сторона: дороги
             leftRoads.forEach(pos => {
-                console.log(`Placing road tile at (${pos[0]}, ${pos[1]}) with rotation 270`);
+                console.log(`Placing road tile at (${pos[0]}, ${pos[1]})`);
                 this.cells[pos[0]][pos[1]] = {
-                    type: 'FRRF',
-                    rotation: 270,
+                    type: 'FRRF',  // Поле-Дорога-Дорога-Поле
+                    rotation: 0,
                     owner: null
                 };
                 this.updateCell(pos[0], pos[1]);

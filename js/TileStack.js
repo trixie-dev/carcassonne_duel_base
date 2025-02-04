@@ -4,7 +4,6 @@ export class TileStack {
     constructor() {
         this.initializeTiles();
         this.currentTile = null;
-        this.currentRotation = 0;
         this.drawNextTile();
         console.log('TileStack initialized');
     }
@@ -39,31 +38,54 @@ export class TileStack {
             const nextTileType = this.tiles.pop();
             console.log('Next tile type:', nextTileType);
             
+            // Створюємо новий тайл з нульовим поворотом
             this.currentTile = {
                 type: nextTileType,
                 rotation: 0
             };
             
-            // Оновлюємо відображення
-            this.updateCurrentTileDisplay();
+            // Оновлюємо відображення без анімації
+            const currentTileElement = document.getElementById('currentTile');
+            if (currentTileElement) {
+                // Спочатку прибираємо всі стилі та transition
+                currentTileElement.style.cssText = '';
+                currentTileElement.style.transition = 'none';
+                
+                // Застосовуємо нові стилі
+                requestAnimationFrame(() => {
+                    currentTileElement.style.backgroundImage = `url('assets/tiles/${this.currentTile.type}.svg')`;
+                    currentTileElement.style.transform = 'rotate(0deg)';
+                    
+                    // Повертаємо transition для наступних обертань
+                    requestAnimationFrame(() => {
+                        currentTileElement.style.transition = 'transform 0.3s ease';
+                    });
+                });
+            }
+            
             console.log('Current tile set to:', this.currentTile);
             return this.currentTile;
         }
         return null;
     }
 
-    updateCurrentTileDisplay() {
-        const currentTileElement = document.getElementById('currentTile');
-        if (currentTileElement && this.currentTile) {
-            currentTileElement.style.backgroundImage = `url('assets/tiles/${this.currentTile.type}.svg')`;
-            currentTileElement.style.transform = `rotate(${this.currentTile.rotation}deg)`;
-        }
-    }
-
     rotateCurrentTile() {
         if (this.currentTile) {
-            this.currentTile.rotation = (this.currentTile.rotation + 90) % 360;
-            this.updateCurrentTileDisplay();
+            // Визначаємо новий кут повороту
+            const currentRotation = this.currentTile.rotation;
+            const newRotation = ((currentRotation + 90) % 360);
+            
+            console.log(`Rotating from ${currentRotation}° to ${newRotation}°`);
+            
+            // Оновлюємо значення повороту
+            this.currentTile.rotation = newRotation;
+            
+            // Оновлюємо відображення
+            const currentTileElement = document.getElementById('currentTile');
+            if (currentTileElement) {
+                currentTileElement.style.transform = `rotate(${newRotation}deg)`;
+            }
+            
             console.log('Rotated tile to:', this.currentTile.rotation);
         }
     }
@@ -81,7 +103,6 @@ export class TileStack {
         console.log('Resetting tile stack...');
         this.initializeTiles();
         this.currentTile = null;
-        this.currentRotation = 0;
         return this.drawNextTile();
     }
 

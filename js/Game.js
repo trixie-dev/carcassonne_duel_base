@@ -95,9 +95,8 @@ export class Game {
     handleCurrentTileClick() {
         console.log('Current tile clicked');
         if (this.tileStack.currentTile) {
-            this.tileStack.currentTile.rotation = (this.tileStack.currentTile.rotation + 90) % 360;
+            this.tileStack.rotateCurrentTile();
             console.log('Rotated tile to:', this.tileStack.currentTile.rotation);
-            this.tileStack.updateCurrentTileDisplay();
         } else {
             console.warn('No current tile to rotate');
         }
