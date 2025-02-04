@@ -298,4 +298,19 @@ export class Board {
         // Спрощена версія підрахунку очок - повертаємо 1 очко за кожну плитку
         return 1;
     }
+
+    isEmpty() {
+        for (let row = 0; row < BOARD_SIZE; row++) {
+            for (let col = 0; col < BOARD_SIZE; col++) {
+                if (this.cells[row][col] !== null) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    isValidCell(row, col) {
+        return row >= 0 && row < BOARD_SIZE && col >= 0 && col < BOARD_SIZE;
+    }
 }

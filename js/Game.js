@@ -50,7 +50,7 @@ export class Game {
         if (currentTile) {
             currentTile.addEventListener('click', () => {
                 console.log('Rotating tile');
-                this.tileStack.rotateCurrentTile();
+                this.handleCurrentTileClick();
             });
         } else {
             console.error('currentTile element not found');
@@ -90,6 +90,17 @@ export class Game {
             }
         }
         return false;
+    }
+
+    handleCurrentTileClick() {
+        console.log('Current tile clicked');
+        if (this.tileStack.currentTile) {
+            this.tileStack.currentTile.rotation = (this.tileStack.currentTile.rotation + 90) % 360;
+            console.log('Rotated tile to:', this.tileStack.currentTile.rotation);
+            this.tileStack.updateCurrentTileDisplay();
+        } else {
+            console.warn('No current tile to rotate');
+        }
     }
 
     skipTurn() {

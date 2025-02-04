@@ -53,29 +53,10 @@ export class TileStack {
     }
 
     updateCurrentTileDisplay() {
-        console.log('Updating current tile display...');
-        const tileDisplay = document.getElementById('currentTile');
-        if (tileDisplay && this.currentTile) {
-            console.log('Setting tile display:', this.currentTile);
-            
-            // Встановлюємо зображення
-            const imageUrl = `assets/tiles/${this.currentTile.type}.svg`;
-            tileDisplay.style.backgroundImage = `url(${imageUrl})`;
-            
-            // Встановлюємо поворот
-            if (this.currentTile.rotation) {
-                tileDisplay.style.transform = `rotate(${this.currentTile.rotation}deg)`;
-            } else {
-                tileDisplay.style.transform = '';
-            }
-            
-            // Оновлюємо лічильник тайлів
-            const tilesLeftElement = document.getElementById('tilesLeft');
-            if (tilesLeftElement) {
-                tilesLeftElement.textContent = this.tiles.length;
-            }
-        } else {
-            console.error('Current tile display element not found or no current tile');
+        const currentTileElement = document.getElementById('currentTile');
+        if (currentTileElement && this.currentTile) {
+            currentTileElement.style.backgroundImage = `url('assets/tiles/${this.currentTile.type}.svg')`;
+            currentTileElement.style.transform = `rotate(${this.currentTile.rotation}deg)`;
         }
     }
 

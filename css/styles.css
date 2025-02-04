@@ -29,7 +29,6 @@
     transform-origin: center center;
     position: relative;
     z-index: 3;
-    transition: transform 0.3s ease;
 }
 
 .has-tile {
