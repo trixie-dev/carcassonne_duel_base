@@ -70,11 +70,15 @@ export function canPlaceTileNextTo(newTileType, newRotation, existingTileType, e
     console.log(`Direction: ${direction}`);
 
     // Отримуємо сторони тайлів з урахуванням поворотів
-    const newSides = getRotatedSides(newTileType, newRotation).split('');
-    const existingSides = getRotatedSides(existingTileType, existingRotation).split('');
+    const rotatedNewTile = getRotatedSides(newTileType, newRotation);
+    const rotatedExistingTile = getRotatedSides(existingTileType, existingRotation);
+    const newSides = rotatedNewTile.split('');
+    const existingSides = rotatedExistingTile.split('');
     
-    console.log('New sides array (after rotation):', newSides);
-    console.log('Existing sides array (after rotation):', existingSides);
+    console.log('Original new tile:', newTileType, '-> Rotated:', rotatedNewTile);
+    console.log('Original existing tile:', existingTileType, '-> Rotated:', rotatedExistingTile);
+    console.log('New sides array (TOP-RIGHT-BOTTOM-LEFT):', newSides.join('-'));
+    console.log('Existing sides array (TOP-RIGHT-BOTTOM-LEFT):', existingSides.join('-'));
     
     let newSide, existingSide;
     
@@ -102,12 +106,12 @@ export function canPlaceTileNextTo(newTileType, newRotation, existingTileType, e
             return false;
     }
 
-    console.log(`Checking connection for direction: ${direction}`);
+    console.log(`\nChecking connection for direction: ${direction}`);
     console.log(`New tile side: ${newSide} (${getSideName(direction, true)})`);
     console.log(`Existing tile side: ${existingSide} (${getSideName(direction, false)})`);
     
     const isCompatible = areSidesCompatible(newSide, existingSide);
-    console.log(`Compatible: ${isCompatible}`);
+    console.log(`Compatible: ${isCompatible}\n`);
     
     return isCompatible;
 }
