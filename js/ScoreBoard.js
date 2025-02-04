@@ -59,4 +59,12 @@ export class ScoreBoard {
         this.jokers = [2, 2];
         this.updateDisplay();
     }
+
+    getPlayer1Score() {
+        return this.scores[0];
+    }
+
+    getPlayer2Score() {
+        return this.scores[1];
+    }
 } 

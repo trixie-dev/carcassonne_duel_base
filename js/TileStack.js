@@ -5,6 +5,13 @@ export class TileStack {
         this.initializeTiles();
         this.currentTile = null;
         this.drawNextTile();
+
+        // Ініціалізуємо лічильник тайлів
+        const tilesLeftElement = document.getElementById('tilesLeft');
+        if (tilesLeftElement) {
+            tilesLeftElement.textContent = this.tiles.length;
+        }
+
         console.log('TileStack initialized');
     }
 
@@ -61,6 +68,12 @@ export class TileStack {
                         currentTileElement.style.transition = 'transform 0.3s ease';
                     });
                 });
+            }
+
+            // Оновлюємо лічильник тайлів
+            const tilesLeftElement = document.getElementById('tilesLeft');
+            if (tilesLeftElement) {
+                tilesLeftElement.textContent = this.tiles.length;
             }
             
             console.log('Current tile set to:', this.currentTile);

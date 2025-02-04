@@ -34,24 +34,31 @@ export class Game {
     bindEvents() {
         console.log('Binding events...');
         
+        // Спочатку видаляємо старі обробники
+        this.removeEventListeners();
+        
         // Обробник для клітинок
         const cells = document.querySelectorAll('.cell');
         cells.forEach(cell => {
-            cell.addEventListener('click', (e) => {
+            const clickHandler = (e) => {
                 const row = parseInt(e.target.dataset.row);
                 const col = parseInt(e.target.dataset.col);
                 console.log(`Cell clicked: ${row}, ${col}`);
                 this.handleCellClick(row, col);
-            });
+            };
+            cell.addEventListener('click', clickHandler);
+            cell._clickHandler = clickHandler; // Зберігаємо посилання на обробник
         });
 
         // Обробник для обертання плитки
         const currentTile = document.getElementById('currentTile');
         if (currentTile) {
-            currentTile.addEventListener('click', () => {
+            const rotateHandler = () => {
                 console.log('Rotating tile');
                 this.handleCurrentTileClick();
-            });
+            };
+            currentTile.addEventListener('click', rotateHandler);
+            currentTile._rotateHandler = rotateHandler; // Зберігаємо посилання на обробник
         } else {
             console.error('currentTile element not found');
         }
@@ -61,9 +68,63 @@ export class Game {
         const jokerButton = document.getElementById('jokerButton');
         const newGameButton = document.getElementById('newGameButton');
 
-        if (skipButton) skipButton.addEventListener('click', () => this.skipTurn());
-        if (jokerButton) jokerButton.addEventListener('click', () => this.toggleJokerMode());
-        if (newGameButton) newGameButton.addEventListener('click', () => this.restartGame());
+        if (skipButton) {
+            const skipHandler = () => this.skipTurn();
+            skipButton.addEventListener('click', skipHandler);
+            skipButton._skipHandler = skipHandler;
+        }
+        
+        if (jokerButton) {
+            const jokerHandler = () => this.toggleJokerMode();
+            jokerButton.addEventListener('click', jokerHandler);
+            jokerButton._jokerHandler = jokerHandler;
+        }
+        
+        if (newGameButton) {
+            const newGameHandler = () => this.restartGame();
+            newGameButton.addEventListener('click', newGameHandler);
+            newGameButton._newGameHandler = newGameHandler;
+        }
+    }
+
+    removeEventListeners() {
+        console.log('Removing old event listeners...');
+        
+        // Видаляємо обробники з клітинок
+        const cells = document.querySelectorAll('.cell');
+        cells.forEach(cell => {
+            if (cell._clickHandler) {
+                cell.removeEventListener('click', cell._clickHandler);
+                delete cell._clickHandler;
+            }
+        });
+
+        // Видаляємо обробник з поточного тайлу
+        const currentTile = document.getElementById('currentTile');
+        if (currentTile && currentTile._rotateHandler) {
+            currentTile.removeEventListener('click', currentTile._rotateHandler);
+            delete currentTile._rotateHandler;
+        }
+
+        // Видаляємо обробники з кнопок
+        const skipButton = document.getElementById('skipButton');
+        const jokerButton = document.getElementById('jokerButton');
+        const newGameButton = document.getElementById('newGameButton');
+
+        if (skipButton && skipButton._skipHandler) {
+            skipButton.removeEventListener('click', skipButton._skipHandler);
+            delete skipButton._skipHandler;
+        }
+
+        if (jokerButton && jokerButton._jokerHandler) {
+            jokerButton.removeEventListener('click', jokerButton._jokerHandler);
+            delete jokerButton._jokerHandler;
+        }
+
+        if (newGameButton && newGameButton._newGameHandler) {
+            newGameButton.removeEventListener('click', newGameButton._newGameHandler);
+            delete newGameButton._newGameHandler;
+        }
     }
 
     handleCellClick(row, col) {
@@ -85,6 +146,11 @@ export class Game {
                     // Оновлюємо стан гри
                     this.scoreBoard.switchPlayer();
                     this.tileStack.drawNextTile();
+                    
+                    // Перевіряємо чи гра закінчилась
+                    if (this.isGameOver()) {
+                        this.handleGameOver();
+                    }
                 }
                 return success;
             }
@@ -135,5 +201,31 @@ export class Game {
             console.error('Error restarting game:', error);
             throw error;
         }
+    }
+
+    isGameOver() {
+        // Перевіряємо чи закінчились тайли
+        return this.tileStack.isEmpty();
+    }
+
+    handleGameOver() {
+        console.log('Game Over!');
+        const player1Score = this.scoreBoard.getPlayer1Score();
+        const player2Score = this.scoreBoard.getPlayer2Score();
+        
+        let winner;
+        if (player1Score > player2Score) {
+            winner = 'Гравець 1';
+        } else if (player2Score > player1Score) {
+            winner = 'Гравець 2';
+        } else {
+            winner = 'Нічия';
+        }
+
+        // Показуємо модальне вікно з результатами
+        const message = `Гра закінчена!\n\nРахунок:\nГравець 1: ${player1Score}\nГравець 2: ${player2Score}\n\nПереможець: ${winner}`;
+        setTimeout(() => {
+            alert(message);
+        }, 100);
     }
 }
