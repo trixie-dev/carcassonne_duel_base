@@ -21,23 +21,23 @@
     <!-- Фон поля -->
     <rect width="100" height="100" fill="url(#fieldTexture)"/>
 
-    <!-- Дорога знизу -->
-    <path d="M40,100 v-35 
-             C 40,55 45,50 50,50
-             C 55,50 60,55 60,65
-             v35 h-20 Z" 
+    <!-- Дорога зверху -->
+    <path d="M40,0 v40 h20 v-40 Z" 
           fill="url(#roadTexture)"/>
 
-    <!-- Обрамлення дороги -->
-    <path d="M40,100 v-35 C 40,55 45,50 50,50 C 55,50 60,55 60,65 v35" 
-          stroke="#616161" stroke-width="2" fill="none"/>
+    <!-- Дорога справа -->
+    <path d="M100,40 h-40 v20 h40 Z" 
+          fill="url(#roadTexture)"/>
+
+    <!-- Обрамлення доріг -->
+    <path d="M40,0 v40" stroke="#616161" stroke-width="2" fill="none"/>
+    <path d="M60,0 v40" stroke="#616161" stroke-width="2" fill="none"/>
+    <path d="M100,40 h-40" stroke="#616161" stroke-width="2" fill="none"/>
+    <path d="M100,60 h-40" stroke="#616161" stroke-width="2" fill="none"/>
 
     <!-- Додаткові елементи поля -->
-    <circle cx="25" cy="25" r="3" fill="#558b2f"/>
-    <circle cx="75" cy="35" r="3" fill="#558b2f"/>
-    <circle cx="35" cy="75" r="3" fill="#558b2f"/>
-    <circle cx="85" cy="65" r="3" fill="#558b2f"/>
-    <path d="M50,15 L55,20 L45,20 Z" fill="#558b2f"/>
-    <path d="M80,50 L85,55 L75,55 Z" fill="#558b2f"/>
-    <path d="M15,45 L20,50 L10,50 Z" fill="#558b2f"/>
+    <circle cx="25" cy="75" r="3" fill="#558b2f"/>
+    <circle cx="75" cy="75" r="3" fill="#558b2f"/>
+    <path d="M15,85 L20,90 L10,90 Z" fill="#558b2f"/>
+    <path d="M85,85 L90,90 L80,90 Z" fill="#558b2f"/>
 </svg> 
