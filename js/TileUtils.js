@@ -20,8 +20,38 @@ export const SIDE_INDEX = {
  * @returns {string} - Рядок з поверненими сторонами
  */
 export function getRotatedSides(tileType, rotation) {
-    // Просто повертаємо оригінальні сторони без обертання
-    return tileType;
+    console.log(`\n=== Rotating tile ${tileType} by ${rotation} degrees ===`);
+    
+    // Нормалізуємо поворот до 0-359
+    const normalizedRotation = ((rotation % 360) + 360) % 360;
+    console.log(`Normalized rotation: ${normalizedRotation} degrees`);
+    
+    // Перетворюємо рядок на масив
+    let sides = tileType.split('');
+    console.log('Initial sides (TOP-RIGHT-BOTTOM-LEFT):', sides.join(''));
+    
+    // Обчислюємо кількість поворотів на 90 градусів за годинниковою стрілкою
+    const rotations = Math.floor(normalizedRotation / 90);
+    console.log(`Number of 90-degree rotations: ${rotations}`);
+    
+    // Виконуємо повороти
+    for (let i = 0; i < rotations; i++) {
+        // При повороті на 90° за годинниковою стрілкою:
+        // [TOP, RIGHT, BOTTOM, LEFT] -> [LEFT, TOP, RIGHT, BOTTOM]
+        const temp = [...sides];
+        sides[0] = temp[3];  // LEFT -> TOP
+        sides[1] = temp[0];  // TOP -> RIGHT
+        sides[2] = temp[1];  // RIGHT -> BOTTOM
+        sides[3] = temp[2];  // BOTTOM -> LEFT
+        
+        console.log(`After ${90 * (i + 1)}° rotation:`, sides.join(''));
+    }
+    
+    const result = sides.join('');
+    console.log(`Final rotated sides: ${result}`);
+    console.log('=== Rotation complete ===\n');
+    
+    return result;
 }
 
 /**
@@ -49,33 +79,57 @@ export function canPlaceTileNextTo(newTileType, newRotation, existingTileType, e
     let newSide, existingSide;
     
     // Визначаємо, які сторони мають з'єднуватися
+    // Порядок сторін у рядку: TOP(0), RIGHT(1), BOTTOM(2), LEFT(3)
     switch (direction) {
-        case 'top': // Новий тайл зверху - його низ має співпадати з верхом існуючого
-            newSide = newSides[2]; // BOTTOM
-            existingSide = existingSides[0]; // TOP
+        case 'top': // Новий тайл знизу
+            newSide = newSides[0];      // top нового
+            existingSide = existingSides[2]; // bottom існуючого
             break;
-        case 'right': // Новий тайл справа - його лівий бік має співпадати з правим боком існуючого
-            newSide = newSides[3]; // LEFT
-            existingSide = existingSides[1]; // RIGHT
+        case 'right': // Новий тайл справа
+            newSide = newSides[1];      // RIGHT нового
+            existingSide = existingSides[3]; // LEFT існуючого
             break;
-        case 'bottom': // Новий тайл знизу - його верх має співпадати з низом існуючого
-            newSide = newSides[0]; // TOP
-            existingSide = existingSides[2]; // BOTTOM
+
+        case 'bottom': // Новий тайл зверху
+            newSide = newSides[2];      // BOTTOM нового
+            existingSide = existingSides[0]; // TOP існуючого
             break;
-        case 'left': // Новий тайл зліва - його правий бік має співпадати з лівим боком існуючого
-            newSide = newSides[1]; // RIGHT
-            existingSide = existingSides[3]; // LEFT
+        case 'left': // Новий тайл справа
+
+            newSide = newSides[3];      // LEFT нового
+            existingSide = existingSides[1]; // RIGHT існуючого
             break;
+
         default:
             console.error('Invalid direction:', direction);
+
             return false;
     }
 
-    console.log(`Checking sides: ${newSide} and ${existingSide}`);
+    console.log(`Checking connection for direction: ${direction}`);
+    console.log(`New tile side: ${newSide} (${getSideName(direction, true)})`);
+    console.log(`Existing tile side: ${existingSide} (${getSideName(direction, false)})`);
+    
     const isCompatible = areSidesCompatible(newSide, existingSide);
     console.log(`Compatible: ${isCompatible}`);
     
     return isCompatible;
+}
+
+// Допоміжна функція для отримання назви сторони
+function getSideName(direction, isNewTile) {
+    switch (direction) {
+        case 'top':
+            return isNewTile ? 'BOTTOM' : 'TOP';
+        case 'right':
+            return isNewTile ? 'LEFT' : 'RIGHT';
+        case 'bottom':
+            return isNewTile ? 'TOP' : 'BOTTOM';
+        case 'left':
+            return isNewTile ? 'RIGHT' : 'LEFT';
+        default:
+            return 'UNKNOWN';
+    }
 }
 
 /**
