@@ -1,8 +1,7 @@
 {
-  "routes": [
-    { "handle": "filesystem" },
-    { "src": "/assets/tiles/.*\\.svg", "dest": "/assets/tiles/$1" },
-    { "src": "/assets/(.*)", "dest": "/assets/$1" }
+  "rewrites": [
+    { "source": "/assets/tiles/:file*", "destination": "/assets/tiles/:file*" },
+    { "source": "/assets/:path*", "destination": "/assets/:path*" }
   ],
   "headers": [
     {
